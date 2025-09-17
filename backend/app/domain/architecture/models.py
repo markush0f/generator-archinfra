@@ -13,7 +13,6 @@ class ArchitectureTagLink(SQLModel, table=True):
         default=None, foreign_key="tag.id", primary_key=True
     )
 
-
 class ArchitectureDatabaseLink(SQLModel, table=True):
     __tablename__ = "architecture_database_link"
     architecture_id: Optional[int] = Field(
@@ -32,7 +31,6 @@ class Tag(SQLModel, table=True):
         back_populates="tags", link_model=ArchitectureTagLink
     )
 
-
 class Database(SQLModel, table=True):
     __tablename__ = "database"
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -42,7 +40,6 @@ class Database(SQLModel, table=True):
     architectures: List["Architecture"] = Relationship(
         back_populates="databases", link_model=ArchitectureDatabaseLink
     )
-
 
 class Architecture(SQLModel, table=True):
     __tablename__ = "architecture"
