@@ -1,0 +1,1 @@
+GENERAR UN requirements.txt segun la arquitectura final, ir guardando que va seleccionando el usuario

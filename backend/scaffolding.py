@@ -1,6 +1,3 @@
-# create_domain.py
-# Scaffolding para arquitectura con main.py en la raíz y DB en app/core/db.py
-
 from pathlib import Path
 import re
 import sys
