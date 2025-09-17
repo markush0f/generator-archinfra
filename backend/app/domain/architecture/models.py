@@ -22,24 +22,6 @@ class ArchitectureDatabaseLink(SQLModel, table=True):
         default=None, foreign_key="database.id", primary_key=True
     )
 
-class Tag(SQLModel, table=True):
-    __tablename__ = "tag"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True, nullable=False, unique=True)
-
-    architectures: List["Architecture"] = Relationship(
-        back_populates="tags", link_model=ArchitectureTagLink
-    )
-
-class Database(SQLModel, table=True):
-    __tablename__ = "database"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: DatabaseType = Field(index=True, nullable=False, unique=True)
-    description: Optional[str] = Field(default=None)
-
-    architectures: List["Architecture"] = Relationship(
-        back_populates="databases", link_model=ArchitectureDatabaseLink
-    )
 
 class Architecture(SQLModel, table=True):
     __tablename__ = "architecture"

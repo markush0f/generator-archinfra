@@ -107,7 +107,6 @@ service_py = dedent(f"""\
             return items, total
 
         def create(self, data: {Pascal}Create) -> {Pascal}:
-            # CORREGIDO: convertir schema a dict
             obj = {Pascal}.model_validate(data.model_dump())
             return self.repo.create(obj)
     """)

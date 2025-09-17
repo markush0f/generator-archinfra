@@ -15,6 +15,5 @@ class ArchitectureService:
         return items, total
 
     def create(self, data: ArchitectureCreate) -> Architecture:
-        # CORREGIDO: convertir schema a dict
         obj = Architecture.model_validate(data.model_dump())
         return self.repo.create(obj)

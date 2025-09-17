@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from app.routers.user import router as user_router
 from app.routers.architecture import router as architecture_router
+from app.routers.database import router as database_router
+from app.routers.tag import router as tag_router
 
 app = FastAPI(
     title="Generator ArchInfra",
@@ -15,3 +17,5 @@ def root():
 
 app.include_router(user_router)
 app.include_router(architecture_router)
+app.include_router(database_router)
+app.include_router(tag_router)

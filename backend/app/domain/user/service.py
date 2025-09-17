@@ -15,6 +15,5 @@ class UserService:
         return items, total
 
     def create(self, data: UserCreate) -> User:
-        # CORREGIDO: convertir schema a dict
         obj = User.model_validate(data.model_dump())
         return self.repo.create(obj)

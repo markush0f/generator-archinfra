@@ -1,38 +1,8 @@
 from typing import List, Optional
+from app.domain.database.schemas import DatabaseRead
+from app.domain.tag.schemas import TagRead
 from sqlmodel import SQLModel
-from app.types.generator_types import ArchitectureType, DatabaseType
-
-
-class TagBase(SQLModel):
-    name: str
-
-
-class TagCreate(TagBase):
-    pass
-
-
-class TagRead(TagBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-
-class DatabaseBase(SQLModel):
-    name: DatabaseType
-    description: Optional[str] = None
-
-
-class DatabaseCreate(DatabaseBase):
-    pass
-
-
-class DatabaseRead(DatabaseBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
+from app.types.generator_types import ArchitectureType
 
 class ArchitectureBase(SQLModel):
     name: str
