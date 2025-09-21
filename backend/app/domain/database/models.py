@@ -7,11 +7,9 @@ if TYPE_CHECKING:
 
 
 class Database(SQLModel, table=True):
-    __tablename__ = "database"
     id: Optional[int] = Field(default=None, primary_key=True)
     name: DatabaseType = Field(index=True, nullable=False, unique=True)
     description: Optional[str] = None
-
     architectures: List["Architecture"] = Relationship(
         back_populates="databases", link_model="ArchitectureDatabaseLink"
     )

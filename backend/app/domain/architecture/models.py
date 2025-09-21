@@ -2,19 +2,18 @@ from __future__ import annotations
 from typing import Optional, List
 from sqlmodel import SQLModel, Field, Relationship
 from app.types.generator_types import ArchitectureType, DatabaseType
+from app.domain.tag.models import Tag
+from app.domain.database.models import Database
 
 
 class ArchitectureTagLink(SQLModel, table=True):
-    __tablename__ = "architecture_tag_link"
     architecture_id: Optional[int] = Field(
         default=None, foreign_key="architecture.id", primary_key=True
     )
-    tag_id: Optional[int] = Field(
-        default=None, foreign_key="tag.id", primary_key=True
-    )
+    tag_id: Optional[int] = Field(default=None, foreign_key="tag.id", primary_key=True)
+
 
 class ArchitectureDatabaseLink(SQLModel, table=True):
-    __tablename__ = "architecture_database_link"
     architecture_id: Optional[int] = Field(
         default=None, foreign_key="architecture.id", primary_key=True
     )
@@ -24,7 +23,6 @@ class ArchitectureDatabaseLink(SQLModel, table=True):
 
 
 class Architecture(SQLModel, table=True):
-    __tablename__ = "architecture"
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True, nullable=False, unique=True)
     type: ArchitectureType = Field(index=True, nullable=False)
