@@ -1,4 +1,13 @@
-from typing_extensions import Literal
+from enum import Enum
 
-ArchitectureType = Literal["fastapi", "react_next", "react_vite", "spring_boot"]
-DatabaseType = Literal["sqlite", "postgresql", "mysql", "mongodb"]
+class ArchitectureTypeEnum(str, Enum):
+    fastapi = "fastapi"
+    react_next = "react_next"
+    react_vite = "react_vite"
+    spring_boot = "spring_boot"
+
+class DatabaseTypeEnum(str, Enum):
+    sqlite = "sqlite"
+    postgresql = "postgresql"
+    mysql = "mysql"
+    mongodb = "mongodb"
