@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from app.core.db import get_session
 from app.domain.tag.service import TagService
 from app.domain.tag.schemas import TagCreate, TagRead, TagPage
+from app.core.database import get_session
 
 router = APIRouter(prefix="/tag", tags=["tag"])
 

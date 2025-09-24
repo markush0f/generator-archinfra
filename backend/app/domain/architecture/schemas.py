@@ -2,11 +2,11 @@ from typing import List, Optional
 from app.domain.database.schemas import DatabaseRead
 from app.domain.tag.schemas import TagRead
 from sqlmodel import SQLModel
-from app.types.generator_types import ArchitectureType
+from app.types.generator_types import ArchitectureTypeEnum
 
 class ArchitectureBase(SQLModel):
     name: str
-    type: ArchitectureType
+    type: ArchitectureTypeEnum
     description: Optional[str] = None
     path: str
 

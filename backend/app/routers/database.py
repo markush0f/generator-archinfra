@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from app.core.db import get_session
 from app.domain.database.service import DatabaseService
 from app.domain.database.schemas import DatabaseCreate, DatabaseRead, DatabasePage
+from app.core.database import get_session
 
 router = APIRouter(prefix="/database", tags=["database"])
 

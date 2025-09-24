@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Optional, List
-from app.types.generator_types import DatabaseType
+from app.types.generator_types import DatabaseTypeEnum
 from sqlmodel import SQLModel
 
 class DatabaseBase(SQLModel):
-    name: DatabaseType
+    name: DatabaseTypeEnum
     description: Optional[str] = None
 
 

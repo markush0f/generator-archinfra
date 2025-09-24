@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from app.core.db import get_session
 from app.domain.architecture.service import ArchitectureService
 from app.domain.architecture.schemas import ArchitectureCreate, ArchitectureRead, ArchitecturePage
+from app.core.database import get_session
 
 router = APIRouter(prefix="/architecture", tags=["architecture"])
 
