@@ -1,51 +1,25 @@
-from __future__ import annotations
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column, String, Enum as SQLEnum
-from sqlalchemy.orm import Mapped
 from app.types.generator_types import ArchitectureTypeEnum
-from app.domain.database.models import Database
-from app.domain.tag.models import Tag
-
-
-
-class ArchitectureTagLink(SQLModel, table=True):
-    architecture_id: Optional[int] = Field(
-        default=None, foreign_key="architecture.id", primary_key=True
-    )
-    tag_id: Optional[int] = Field(
-        default=None, foreign_key="tag.id", primary_key=True
-    )
-
-
-class ArchitectureDatabaseLink(SQLModel, table=True):
-    architecture_id: Optional[int] = Field(
-        default=None, foreign_key="architecture.id", primary_key=True
-    )
-    database_id: Optional[int] = Field(
-        default=None, foreign_key="database.id", primary_key=True
-    )
+from app.domain.links import ArchitectureTagLink, ArchitectureDatabaseLink
 
 
 class Architecture(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(
-        sa_column=Column(String, nullable=False, unique=True, index=True)
-    )
+    name: str = Field(sa_column=Column(String, nullable=False, unique=True, index=True))
     type: ArchitectureTypeEnum = Field(
         sa_column=Column(SQLEnum(ArchitectureTypeEnum), nullable=False, index=True)
     )
-    description: Optional[str] = Field(default=None)
-    path: str = Field(
-        sa_column=Column(String, nullable=False, unique=True, index=True)
-    )
+    description: Optional[str] = None
+    path: str = Field(sa_column=Column(String, nullable=False, unique=True, index=True))
 
-    tags: Mapped[List[Tag]] = Relationship(
+    tags: list["Tag"] = Relationship(
         back_populates="architectures",
         link_model=ArchitectureTagLink,
     )
 
-    databases: Mapped[List[Database]] = Relationship(
+    databases: list["Database"] = Relationship(
         back_populates="architectures",
         link_model=ArchitectureDatabaseLink,
     )

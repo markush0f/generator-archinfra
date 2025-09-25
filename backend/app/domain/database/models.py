@@ -1,24 +1,18 @@
-from __future__ import annotations
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column, Enum as SQLEnum
-from sqlalchemy.orm import Mapped
 from app.types.generator_types import DatabaseTypeEnum
-from app.domain.architecture.models import Architecture, ArchitectureDatabaseLink
+from app.domain.links import ArchitectureDatabaseLink
 
 
 class Database(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-
     name: DatabaseTypeEnum = Field(
-        sa_column=Column(
-            SQLEnum(DatabaseTypeEnum), nullable=False, unique=True, index=True
-        )
+        sa_column=Column(SQLEnum(DatabaseTypeEnum), nullable=False, unique=True, index=True)
     )
+    description: Optional[str] = None
 
-    description: Optional[str] = Field(default=None)
-
-    architectures: Mapped[List["Architecture"]] = Relationship(
+    architectures: list["Architecture"] = Relationship(
         back_populates="databases",
-        link_model=ArchitectureDatabaseLink, 
+        link_model=ArchitectureDatabaseLink,
     )

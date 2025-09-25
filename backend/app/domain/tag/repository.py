@@ -1,6 +1,6 @@
 from typing import Sequence
 from sqlmodel import Session, select
-from sqlalchemy import func
+from sqlmodel import func
 from .models import Tag
 
 class TagRepository:

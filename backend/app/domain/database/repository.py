@@ -1,6 +1,5 @@
 from typing import Sequence
-from sqlmodel import Session, select
-from sqlalchemy import func
+from sqlmodel import Session, func, select
 from .models import Database
 
 class DatabaseRepository:
