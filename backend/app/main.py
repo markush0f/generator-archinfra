@@ -6,6 +6,8 @@ from app.routers.tag import router as tag_router
 from fastapi.responses import JSONResponse
 from app.routers.project import router as project_router
 from app.core.database import init_db
+from app.routers.eag import router as eag_router
+from app.routers.rag import router as rag_router
 
 app = FastAPI(
     title="Generator ArchInfra",
@@ -23,3 +25,5 @@ app.include_router(architecture_router)
 app.include_router(database_router)
 app.include_router(tag_router)
 app.include_router(project_router)
+app.include_router(eag_router)
+app.include_router(rag_router)
