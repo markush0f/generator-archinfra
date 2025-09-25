@@ -1,6 +1,7 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship, Column, String
 from app.domain.links import ArchitectureTagLink
+from app.domain.project.models import ProjectTagLink
 
 
 class Tag(SQLModel, table=True):
@@ -10,4 +11,7 @@ class Tag(SQLModel, table=True):
     architectures: list["Architecture"] = Relationship(
         back_populates="tags",
         link_model=ArchitectureTagLink,
+    )
+    projects: list["Project"] = Relationship(
+        back_populates="tags", link_model=ProjectTagLink
     )

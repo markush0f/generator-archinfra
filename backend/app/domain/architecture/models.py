@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Optional
 from sqlmodel import SQLModel, Field, Relationship, Column, String, Enum as SQLEnum
 from app.types.generator_types import ArchitectureTypeEnum
 from app.domain.links import ArchitectureTagLink, ArchitectureDatabaseLink
+from app.domain.project.models import ProjectTagLink
 
 
 class Architecture(SQLModel, tabzle=True):
@@ -21,4 +22,8 @@ class Architecture(SQLModel, tabzle=True):
     databases: list["Database"] = Relationship(
         back_populates="architectures",
         link_model=ArchitectureDatabaseLink,
+    )
+
+    projects: list["Project"] = Relationship(
+        back_populates="tags", link_model=ProjectTagLink
     )

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from app.core.db import get_session
 from app.domain.project.service import ProjectService
 from app.domain.project.schemas import ProjectCreate, ProjectRead, ProjectPage
+from app.core.database import get_session
 
 router = APIRouter(prefix="/project", tags=["project"])
 
