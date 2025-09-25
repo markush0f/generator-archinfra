@@ -36,7 +36,6 @@ for p in [app_dir, app_dir / "core", app_dir / "domain", domain_dir, routers_dir
 # ===== files =====
 
 models_py = dedent(f"""\
-    from __future__ import annotations
     from typing import Optional
     from sqlmodel import SQLModel, Field
 
@@ -46,7 +45,6 @@ models_py = dedent(f"""\
     """)
 
 schemas_py = dedent(f"""\
-    from __future__ import annotations
     from typing import Optional, List
     from sqlmodel import SQLModel
 
