@@ -5,7 +5,7 @@ from app.domain.links import ArchitectureTagLink, ArchitectureDatabaseLink
 from app.domain.project.models import ProjectTagLink
 
 
-class Architecture(SQLModel, tabzle=True):
+class Architecture(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(sa_column=Column(String, nullable=False, unique=True, index=True))
     type: ArchitectureTypeEnum = Field(
@@ -25,5 +25,5 @@ class Architecture(SQLModel, tabzle=True):
     )
 
     projects: list["Project"] = Relationship(
-        back_populates="tags", link_model=ProjectTagLink
+        back_populates="architecture", link_model=ProjectTagLink
     )

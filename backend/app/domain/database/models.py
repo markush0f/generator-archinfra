@@ -20,5 +20,5 @@ class Database(SQLModel, table=True):
     )
     
     projects: list["Project"] = Relationship(
-        back_populates="tags", link_model=ProjectTagLink
+        back_populates="database", link_model=ProjectTagLink
     )

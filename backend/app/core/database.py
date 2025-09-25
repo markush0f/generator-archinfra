@@ -1,6 +1,18 @@
 from typing import Generator
-from sqlmodel import create_engine, Session
+from sqlmodel import create_engine, Session, SQLModel
 from app.core.config import DATABASE_URL
+
+# importa todos los modelos aquí
+from app.domain.architecture.models import Architecture
+from app.domain.database.models import Database
+from app.domain.tag.models import Tag
+from app.domain.project.models import Project
+from app.domain.links import (
+    ArchitectureTagLink,
+    ArchitectureDatabaseLink,
+    ProjectTagLink,
+    ProjectDatabaseLink,
+)
 
 if DATABASE_URL is None:
     raise ValueError("DATABASE_URL must be set and not None.")
@@ -10,6 +22,13 @@ engine = create_engine(
     pool_pre_ping=True,
     echo=False,
 )
+
+
+def init_db() -> None:
+    """
+    Crea todas las tablas definidas en los modelos si no existen.
+    """
+    SQLModel.metadata.create_all(engine)
 
 
 def get_session() -> Generator[Session, None, None]:
