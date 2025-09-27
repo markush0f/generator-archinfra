@@ -1,15 +1,26 @@
-from typing import Optional, List
+from typing import Optional
+from datetime import datetime
 from sqlmodel import SQLModel
 
-class RagBase(SQLModel):
-    pass  # añade campos compartidos aquí
+class DocumentBase(SQLModel):
+    project: str
+    content: str
+    source: str
+    pass
 
-class RagCreate(RagBase):
-    pass  # campos requeridos para crear
 
-class RagRead(RagBase):
+class DocumentCreate(DocumentBase):
+    project: str
+    content: str
+    source: Optional[str] = None
+
+
+class DocumentRead(DocumentBase):
     id: int
+    project: str
+    content: str
+    source: Optional[str] = None
+    created_at: datetime
 
-class RagPage(SQLModel):
-    total: int
-    items: List[RagRead]
+    class Config:
+        from_attributes = True

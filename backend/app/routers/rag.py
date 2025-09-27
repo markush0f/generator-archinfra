@@ -1,19 +1,26 @@
 from fastapi import APIRouter, Depends
+from app.domain.rag.service import EmbeddingService
+from app.domain.rag.schemas import DocumentCreate
 from sqlmodel import Session
-from app.core.db import get_session
-from app.domain.rag.service import RagService
-from app.domain.rag.schemas import RagCreate, RagRead, RagPage
+from app.core.database import get_session
+from app.domain.rag import models
 
-router = APIRouter(prefix="/rag", tags=["rag"])
+router = APIRouter(prefix="/rag", tags=["RAG"])
+service = EmbeddingService()
 
-def get_service(session: Session = Depends(get_session)) -> RagService:
-    return RagService(session)
+@router.post("/add")
+def add_documents(docs: list[DocumentCreate], session: Session = Depends(get_session)):
+    # guardar en Postgres
+    db_docs = []
+    for doc in docs:
+        db_doc = models.Document(**doc.dict())
+        session.add(db_doc)
+        db_docs.append(db_doc.dict())
+    session.commit()
+    # añadir a FAISS
+    added = service.add_documents(db_docs)
+    return {"added": added}
 
-@router.get("", response_model=RagPage)
-def list_rag(offset: int = 0, limit: int = 50, svc: RagService = Depends(get_service)):
-    items, total = svc.list_with_total(offset=offset, limit=limit)
-    return RagPage(total=total, items=items)
-
-@router.post("", response_model=RagRead)
-def create_rag(payload: RagCreate, svc: RagService = Depends(get_service)):
-    return svc.create(payload)
+@router.get("/search")
+def search_docs(query: str, k: int = 5):
+    return {"results": service.search(query, k)}
