@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.domain.rag.service import EmbeddingService
+from app.domain.rag.embedding_service import EmbeddingService
 from app.domain.rag.schemas import DocumentCreate
 from sqlmodel import Session
 from app.core.database import get_session
