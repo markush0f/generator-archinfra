@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Optional, List
 from app.types.generator_types import DatabaseTypeEnum
 from sqlmodel import SQLModel
