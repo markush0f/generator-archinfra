@@ -10,16 +10,11 @@ class DocumentBase(SQLModel):
 
 
 class DocumentCreate(DocumentBase):
-    project: str
     content: str
-    source: Optional[str] = None
 
 
 class DocumentRead(DocumentBase):
     id: int
-    project: str
-    content: str
-    source: Optional[str] = None
     created_at: datetime
 
     class Config:
