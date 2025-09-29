@@ -4,7 +4,7 @@ import os
 from sqlmodel import SQLModel
 
 current_dir = os.path.dirname(__file__)
-backend_dir = os.path.abspath(os.path.join(current_dir, "..")) 
+backend_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.insert(0, backend_dir)
 
 from logging.config import fileConfig
@@ -20,6 +20,7 @@ from app.domain.architecture.models import (
 )
 from app.domain.tag.models import Tag
 from app.domain.user.models import User
+from app.domain.rag.models import Document
 
 config = context.config
 
@@ -27,6 +28,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = SQLModel.metadata
+
 
 def run_migrations_offline():
     url = DATABASE_URL
