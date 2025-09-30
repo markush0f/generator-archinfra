@@ -1,6 +1,6 @@
 # app/domain/database/models.py
 from typing import Optional
-from sqlmodel import SQLModel, Field, Relationship, Column, Enum as SQLEnum
+from sqlmodel import SQLModel, Field, Relationship, Column, String
 from app.types.generator_types import DatabaseTypeEnum
 from app.domain.links import ArchitectureDatabaseLink
 from app.domain.project.models import (
@@ -12,11 +12,8 @@ class Database(SQLModel, table=True):
     __tablename__ = "database"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: DatabaseTypeEnum = Field(
-        sa_column=Column(
-            SQLEnum(DatabaseTypeEnum), nullable=False, unique=True, index=True
-        )
-    )
+    name: str = Field(sa_column=Column(String, nullable=False, unique=True, index=True)) 
+
     description: Optional[str] = None
 
     architectures: list["Architecture"] = Relationship(

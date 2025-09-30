@@ -1,5 +1,5 @@
 from typing import  Optional
-from sqlmodel import SQLModel, Field, Relationship, Column, String, Enum as SQLEnum
+from sqlmodel import SQLModel, Field, Relationship, Column, String
 from app.types.generator_types import ArchitectureTypeEnum
 from app.domain.links import ArchitectureTagLink, ArchitectureDatabaseLink
 
@@ -7,9 +7,7 @@ from app.domain.links import ArchitectureTagLink, ArchitectureDatabaseLink
 class Architecture(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(sa_column=Column(String, nullable=False, unique=True, index=True))
-    type: ArchitectureTypeEnum = Field(
-        sa_column=Column(SQLEnum(ArchitectureTypeEnum), nullable=False, index=True)
-    )
+    type: str = Field(sa_column=Column(String, nullable=False, index=True)) 
     description: Optional[str] = None
     path: str = Field(sa_column=Column(String, nullable=False, unique=True, index=True))
 
