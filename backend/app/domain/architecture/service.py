@@ -17,3 +17,5 @@ class ArchitectureService:
     def create(self, data: ArchitectureCreate) -> Architecture:
         obj = Architecture.model_validate(data.model_dump())
         return self.repo.create(obj)
+    
+    

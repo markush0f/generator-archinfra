@@ -1,11 +1,10 @@
-# app/domain/database/models.py
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship, Column, String
 from app.types.generator_types import DatabaseTypeEnum
 from app.domain.links import ArchitectureDatabaseLink
 from app.domain.project.models import (
     ProjectDatabaseLink,
-)  # 👈 importar el link correcto
+) 
 
 
 class Database(SQLModel, table=True):

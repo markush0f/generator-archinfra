@@ -17,3 +17,4 @@ class DatabaseService:
     def create(self, data: DatabaseCreate) -> Database:
         obj = Database.model_validate(data.model_dump())
         return self.repo.create(obj)
+    
