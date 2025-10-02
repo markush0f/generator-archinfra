@@ -3,9 +3,11 @@ import re
 import sys
 from textwrap import dedent
 
+
 def fail(msg: str) -> None:
     print(msg, file=sys.stderr)
     raise SystemExit(1)
+
 
 domain = input("Nombre del dominio: ").strip().lower()
 if not re.fullmatch(r"[a-z][a-z0-9_]*", domain):
@@ -20,9 +22,10 @@ domain_dir = app_dir / "domain" / domain
 routers_dir = app_dir / "routers"
 main_file = app_dir / "main.py"
 
-
 if not main_file.exists():
-    fail(f"No se encontró main.py en {main_file}. Ajusta el script si tu main está en app/main.py.")
+    fail(
+        f"No se encontró main.py en {main_file}. Ajusta el script si tu main está en app/main.py."
+    )
 
 # Crear carpetas/paquetes
 domain_dir.mkdir(parents=True, exist_ok=True)
@@ -35,35 +38,49 @@ for p in [app_dir, app_dir / "core", app_dir / "domain", domain_dir, routers_dir
 
 # ===== files =====
 
-models_py = dedent(f"""\
+models_py = dedent(
+    f"""\
     from typing import Optional
     from sqlmodel import SQLModel, Field
 
     class {Pascal}(SQLModel, table=True):
         __tablename__ = "{domain}"
         id: Optional[int] = Field(default=None, primary_key=True)
-    """)
+        name: str
+        email: Optional[str] = None
+        status: Optional[str] = None
+    """
+)
 
-schemas_py = dedent(f"""\
+schemas_py = dedent(
+    f"""\
     from typing import Optional, List
     from sqlmodel import SQLModel
 
     class {Pascal}Base(SQLModel):
-        pass  # añade campos compartidos aquí
+        name: Optional[str] = None
+        email: Optional[str] = None
+        status: Optional[str] = None
 
     class {Pascal}Create({Pascal}Base):
-        pass  # campos requeridos para crear
+        name: str
 
     class {Pascal}Read({Pascal}Base):
         id: int
+        name: str
+
+    class {Pascal}Update({Pascal}Base):
+        pass
 
     class {Pascal}Page(SQLModel):
         total: int
         items: List[{Pascal}Read]
-    """)
+    """
+)
 
-repository_py = dedent(f"""\
-    from typing import Sequence
+repository_py = dedent(
+    f"""\
+    from typing import Sequence, Optional, Any
     from sqlmodel import Session, select
     from sqlalchemy import func
     from .models import {Pascal}
@@ -72,49 +89,100 @@ repository_py = dedent(f"""\
         def __init__(self, session: Session):
             self.session = session
 
-        def list(self, offset: int = 0, limit: int = 50) -> Sequence[{Pascal}]:
-            stmt = select({Pascal}).offset(offset).limit(limit)
+        def list_with_filters(
+            self, 
+            offset: int = 0, 
+            limit: int = 50,
+            filters: dict[str, Any] | None = None
+        ) -> Sequence[{Pascal}]:
+            stmt = select({Pascal})
+            if filters:
+                for field, value in filters.items():
+                    if value is not None and hasattr({Pascal}, field):
+                        col = getattr({Pascal}, field)
+                        if isinstance(value, str):
+                            stmt = stmt.where(col.ilike(f"%{{value}}%"))
+                        else:
+                            stmt = stmt.where(col == value)
+            stmt = stmt.offset(offset).limit(limit)
             return self.session.exec(stmt).all()
 
         def count(self) -> int:
             stmt = select(func.count()).select_from({Pascal})
             return int(self.session.exec(stmt).one())
 
+        def get(self, id: int) -> Optional[{Pascal}]:
+            return self.session.get({Pascal}, id)
+
         def create(self, obj: {Pascal}) -> {Pascal}:
             self.session.add(obj)
             self.session.commit()
             self.session.refresh(obj)
             return obj
-    """)
 
-service_py = dedent(f"""\
-    from typing import List
+        def update(self, obj: {Pascal}, data: dict) -> {Pascal}:
+            for key, value in data.items():
+                setattr(obj, key, value)
+            self.session.add(obj)
+            self.session.commit()
+            self.session.refresh(obj)
+            return obj
+
+        def delete(self, obj: {Pascal}) -> None:
+            self.session.delete(obj)
+            self.session.commit()
+    """
+)
+
+service_py = dedent(
+    f"""\
+    from typing import List, Optional, Any
     from sqlmodel import Session
     from .models import {Pascal}
     from .repository import {Pascal}Repository
-    from .schemas import {Pascal}Create
+    from .schemas import {Pascal}Create, {Pascal}Update
 
     class {Pascal}Service:
         def __init__(self, session: Session):
             self.repo = {Pascal}Repository(session)
 
-        def list_with_total(self, offset: int, limit: int) -> tuple[list[{Pascal}], int]:
-            items_seq = self.repo.list(offset=offset, limit=limit)
+        def list_with_total(
+            self, offset: int, limit: int, filters: dict[str, Any] | None = None
+        ) -> tuple[list[{Pascal}], int]:
+            items_seq = self.repo.list_with_filters(offset=offset, limit=limit, filters=filters)
             items: List[{Pascal}] = list(items_seq)
             total = self.repo.count()
             return items, total
 
+        def get(self, id: int) -> Optional[{Pascal}]:
+            return self.repo.get(id)
+
         def create(self, data: {Pascal}Create) -> {Pascal}:
             obj = {Pascal}.model_validate(data.model_dump())
             return self.repo.create(obj)
-    """)
 
-router_py = dedent(f"""\
-    from fastapi import APIRouter, Depends
+        def update(self, id: int, data: {Pascal}Update) -> Optional[{Pascal}]:
+            obj = self.repo.get(id)
+            if not obj:
+                return None
+            return self.repo.update(obj, data.model_dump(exclude_unset=True))
+
+        def delete(self, id: int) -> bool:
+            obj = self.repo.get(id)
+            if not obj:
+                return False
+            self.repo.delete(obj)
+            return True
+    """
+)
+
+router_py = dedent(
+    f"""\
+    from fastapi import APIRouter, Depends, HTTPException, Query
     from sqlmodel import Session
     from app.core.db import get_session
     from app.domain.{domain}.service import {Pascal}Service
-    from app.domain.{domain}.schemas import {Pascal}Create, {Pascal}Read, {Pascal}Page
+    from app.domain.{domain}.schemas import {Pascal}Create, {Pascal}Read, {Pascal}Page, {Pascal}Update
 
     router = APIRouter(prefix="/{domain}", tags=["{domain}"])
 
@@ -122,14 +190,48 @@ router_py = dedent(f"""\
         return {Pascal}Service(session)
 
     @router.get("", response_model={Pascal}Page)
-    def list_{domain}(offset: int = 0, limit: int = 50, svc: {Pascal}Service = Depends(get_service)):
-        items, total = svc.list_with_total(offset=offset, limit=limit)
+    def list_{domain}(
+        offset: int = 0, 
+        limit: int = 50,
+        name: str | None = Query(None),
+        email: str | None = Query(None),
+        status: str | None = Query(None),
+        svc: {Pascal}Service = Depends(get_service)
+    ):
+        filters = {{
+            "name": name,
+            "email": email,
+            "status": status
+        }}
+        items, total = svc.list_with_total(offset=offset, limit=limit, filters=filters)
         return {Pascal}Page(total=total, items=items)
+
+    @router.get("/{id}", response_model={Pascal}Read)
+    def get_{domain}(id: int, svc: {Pascal}Service = Depends(get_service)):
+        obj = svc.get(id)
+        if not obj:
+            raise HTTPException(status_code=404, detail="{Pascal} not found")
+        return obj
 
     @router.post("", response_model={Pascal}Read)
     def create_{domain}(payload: {Pascal}Create, svc: {Pascal}Service = Depends(get_service)):
         return svc.create(payload)
-    """)
+
+    @router.put("/{id}", response_model={Pascal}Read)
+    def update_{domain}(id: int, payload: {Pascal}Update, svc: {Pascal}Service = Depends(get_service)):
+        obj = svc.update(id, payload)
+        if not obj:
+            raise HTTPException(status_code=404, detail="{Pascal} not found")
+        return obj
+
+    @router.delete("/{id}")
+    def delete_{domain}(id: int, svc: {Pascal}Service = Depends(get_service)):
+        ok = svc.delete(id)
+        if not ok:
+            raise HTTPException(status_code=404, detail="{Pascal} not found")
+        return {{"ok": True}}
+    """
+)
 
 (domain_dir / "models.py").write_text(models_py, encoding="utf-8")
 (domain_dir / "schemas.py").write_text(schemas_py, encoding="utf-8")
@@ -160,7 +262,7 @@ if include_stmt not in main_txt:
         lines.insert(insert_at, include_stmt)
         main_txt = "\n".join(lines) + "\n"
     else:
-        main_txt += ("\n" + include_stmt + "\n")
+        main_txt += "\n" + include_stmt + "\n"
 
 main_file.write_text(main_txt, encoding="utf-8")
 
